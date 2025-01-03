@@ -1,12 +1,15 @@
+> [!IMPORTANT]
+> This library will be updated to major minecraft versions only in the future.
+
 # AdvancedChatFilters
 
 AdvancedChatFilters allows for complex manipulation of incoming chat messages.
 
-Please submit bugs to the [issue tracker](https://github.com/DarkKronicle/AdvancedChatFilters/issues). Join the [Discord](https://discord.gg/WnaE3uZxDA) for more help!
+Please submit bugs to the [issue tracker](https://github.com/Arematics/AdvancedChatFilters/issues)
 
 ## Dependencies
 
-[AdvancedChatCore](https://github.com/DarkKronicle/AdvancedChatCore) is required to run the mod.
+[AdvancedChatCore](https://github.com/Arematics/AdvancedChatCore) is required to run the mod.
 
 ## Features
 
