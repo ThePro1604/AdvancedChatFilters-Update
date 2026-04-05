@@ -14,12 +14,12 @@ import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.config.options.ConfigOptionList;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.AdvancedChatCore;
 import io.github.darkkronicle.advancedchatcore.config.SaveableConfig;
-import io.github.darkkronicle.advancedchatcore.config.options.ConfigColor;
 import io.github.darkkronicle.advancedchatcore.interfaces.ConfigRegistryOption;
 import io.github.darkkronicle.advancedchatcore.interfaces.IJsonSave;
 import io.github.darkkronicle.advancedchatcore.interfaces.IMatchProcessor;
@@ -139,12 +139,14 @@ public class Filter implements Comparable<Filter> {
                             false,
                             translate("info.replacetextcolor")));
 
-    private SaveableConfig<ConfigColor> textColor =
+    private SaveableConfig<ConfigInteger> textColor =
             SaveableConfig.fromConfig(
                     "textColor",
-                    new ConfigColor(
+                    new ConfigInteger(
                             translate("textcolor"),
-                            Colors.getInstance().getColorOrWhite("white"),
+                            Colors.getInstance().getColorOrWhite("white").color(),
+                            Integer.MIN_VALUE,
+                            Integer.MAX_VALUE,
                             translate("info.textcolor")));
 
     private SaveableConfig<ConfigBoolean> replaceBackgroundColor =
@@ -155,12 +157,14 @@ public class Filter implements Comparable<Filter> {
                             false,
                             translate("info.replacebackgroundcolor")));
 
-    private SaveableConfig<ConfigColor> backgroundColor =
+    private SaveableConfig<ConfigInteger> backgroundColor =
             SaveableConfig.fromConfig(
                     "backgroundColor",
-                    new ConfigColor(
+                    new ConfigInteger(
                             translate("backgroundcolor"),
-                            Colors.getInstance().getColorOrWhite("white"),
+                            Colors.getInstance().getColorOrWhite("white").color(),
+                            Integer.MIN_VALUE,
+                            Integer.MAX_VALUE,
                             translate("info.backgroundcolor")));
 
     private MatchProcessorRegistry processors = MatchProcessorRegistry.getInstance().clone();

@@ -13,8 +13,9 @@ import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import io.github.darkkronicle.advancedchatfilters.scripting.ScriptFilter;
 import io.github.darkkronicle.advancedchatfilters.scripting.ScriptManager;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,19 +50,14 @@ public class WidgetListAdvancedFilters
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks) {
-        super.render(drawContext, mouseX, mouseY, partialTicks);
-    }
-
-    @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton) {
+    public boolean onMouseClicked(Click click, boolean doubleClick) {
         clearTextFieldFocus();
-        return super.onMouseClicked(mouseX, mouseY, mouseButton);
+        return super.onMouseClicked(click, doubleClick);
     }
 
     protected void clearTextFieldFocus() {
         for (TextFieldWrapper<? extends GuiTextFieldGeneric> field : this.textFields) {
-            GuiTextFieldGeneric textField = field.getTextField();
+            GuiTextFieldGeneric textField = field.textField();
 
             if (textField.isFocused()) {
                 textField.setFocused(false);
@@ -71,13 +67,13 @@ public class WidgetListAdvancedFilters
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers) {
+    public boolean onKeyTyped(KeyInput input) {
         for (WidgetAdvancedFilterEntry widget : this.listWidgets) {
-            if (widget.onKeyTyped(keyCode, scanCode, modifiers)) {
+            if (widget.onKeyTyped(input)) {
                 return true;
             }
         }
-        return super.onKeyTyped(keyCode, scanCode, modifiers);
+        return super.onKeyTyped(input);
     }
 
     @Override

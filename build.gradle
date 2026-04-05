@@ -3,13 +3,16 @@ import java.time.format.DateTimeFormatter
 import java.time.ZoneOffset
 
 plugins {
-    id 'fabric-loom' version '1.11-SNAPSHOT'
+    id 'fabric-loom' version "1.15-SNAPSHOT"
     id 'maven-publish'
     id "io.freefair.lombok" version "8.10"
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 // read version from env if provided by CI
 def envModVersion = System.getenv('MOD_VERSION')?.trim()
@@ -19,19 +22,22 @@ def ts = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern('y
 
 def modVersion = envModVersion ?: ts
 
-archivesBaseName = project.archives_base_name
-version = "${project.minecraft_version}-${modVersion}"
+base {
+    archivesName = project.archives_base_name
+}
+version = "${project.minecraft_version}-${project.mod_version}"
 group = project.maven_group
 
 repositories {
     mavenCentral()
     maven { url 'https://masa.dy.fi/maven' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.fallenbreath.me/releases' }
     maven {
-        url = uri("https://maven.pkg.github.com/Arematics/AdvancedChatCore")
+        url = uri("https://maven.pkg.github.com/ThePro1604/AdvancedChatCore-Update")
         credentials {
             username = findProperty("gpr.user")?.toString() ?: System.getenv("GITHUB_ACTOR")
-            password = findProperty("gpr.key")?.toString()  ?: System.getenv("GITHUB_TOKEN")
+            password = findProperty("gpr.key")?.toString() ?: System.getenv("GITHUB_TOKEN")
         }
     }
 }

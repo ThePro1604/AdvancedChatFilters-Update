@@ -42,7 +42,6 @@ public class GuiAdvancedFilterManager
         return this.width - 20;
     }
 
-    @Override
     public void resize(MinecraftClient mc, int width, int height) {
         this.width = width;
         this.height = height;

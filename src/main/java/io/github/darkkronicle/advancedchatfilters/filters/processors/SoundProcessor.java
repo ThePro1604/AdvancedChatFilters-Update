@@ -82,7 +82,7 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
 
             MinecraftClient.getInstance()
                     .getSoundManager()
-                    .play(PositionedSoundInstance.master(event, pitch, volume));
+                    .play(PositionedSoundInstance.ui(event, pitch, volume));
             return io.github.darkkronicle.Konstruct.parser.Result.success(new NullObject());
         }
 
@@ -133,7 +133,7 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
             MinecraftClient.getInstance()
                     .getSoundManager()
                     .play(
-                            PositionedSoundInstance.master(
+                            PositionedSoundInstance.ui(
                                     getSound().event,
                                     (float) soundPitch.config.getDoubleValue(),
                                     (float) soundVolume.config.getDoubleValue()));

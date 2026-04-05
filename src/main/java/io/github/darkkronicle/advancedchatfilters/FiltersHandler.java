@@ -119,7 +119,7 @@ public class FiltersHandler implements IMessageFilter {
                         new ReplaceFilter(
                                 filter.getReplaceTo().config.getStringValue().replaceAll("&", "§"),
                                 filter.getReplace(),
-                                filter.getTextColor().config.get()));
+                                new Color(filter.getTextColor().config.getIntegerValue())));
             } else {
                 filt.addFilter(
                         new ReplaceFilter(
@@ -129,7 +129,7 @@ public class FiltersHandler implements IMessageFilter {
             }
         }
         if (filter.getReplaceBackgroundColor().config.getBooleanValue()) {
-            filt.addFilter(new ColorFilter(filter.getBackgroundColor().config.get()));
+            filt.addFilter(new ColorFilter(new Color(filter.getBackgroundColor().config.getIntegerValue())));
         }
         if (filter.getProcessors().activeAmount() > 0) {
             if (filter.getProcessors().activeAmount() == 1) {

@@ -16,6 +16,7 @@ import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -27,7 +28,9 @@ import io.github.darkkronicle.advancedchatfilters.config.FiltersConfigStorage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import java.util.Collections;
 import java.util.List;
@@ -130,24 +133,24 @@ public class WidgetFilterEntry extends WidgetListEntryBase<Filter> {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected) {
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected) {
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY)) {
-            RenderUtils.drawRect(drawContext,
+            RenderUtils.drawRect(ctx,
                     this.x,
                     this.y,
                     this.width,
                     this.height,
                     Colors.getInstance().getColorOrWhite("listhover").color());
         } else if (this.isOdd) {
-            RenderUtils.drawRect(drawContext,
+            RenderUtils.drawRect(ctx,
                     this.x,
                     this.y,
                     this.width,
                     this.height,
                     Colors.getInstance().getColorOrWhite("list1").color());
         } else {
-            RenderUtils.drawRect(drawContext,
+            RenderUtils.drawRect(ctx,
                     this.x,
                     this.y,
                     this.width,
@@ -155,7 +158,7 @@ public class WidgetFilterEntry extends WidgetListEntryBase<Filter> {
                     Colors.getInstance().getColorOrWhite("list2").color());
         }
         String name = this.filter.getName().config.getStringValue();
-        this.drawString(drawContext,
+        this.drawString(ctx,
                 this.x + 4,
                 this.y + 7,
                 Colors.getInstance().getColorOrWhite("white").color(),
@@ -163,20 +166,20 @@ public class WidgetFilterEntry extends WidgetListEntryBase<Filter> {
         );
 
 
-        this.drawTextFields(drawContext, mouseX, mouseY);
+        this.drawTextFields(ctx, mouseX, mouseY);
 
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected) {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected) {
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
 
         if (mouseX >= this.x
                 && mouseX < this.buttonStartX
                 && mouseY >= this.y
                 && mouseY <= this.y + this.height) {
-            RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.hoverLines);
+            RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.hoverLines);
         }
     }
 
@@ -239,13 +242,13 @@ public class WidgetFilterEntry extends WidgetListEntryBase<Filter> {
     }
 
     @Override
-    protected boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers) {
+    protected boolean onKeyTypedImpl(KeyInput input) {
         if (this.num != null && this.num.isFocused()) {
-            if (keyCode == KeyCodes.KEY_ENTER) {
-                this.num.getTextField().getApply().run();
+            if (input.key() == KeyCodes.KEY_ENTER) {
+                this.num.textField().getApply().run();
                 return true;
             } else {
-                return this.num.onKeyTyped(keyCode, scanCode, modifiers);
+                return this.num.onKeyTyped(input);
             }
         }
 
@@ -253,40 +256,40 @@ public class WidgetFilterEntry extends WidgetListEntryBase<Filter> {
     }
 
     @Override
-    protected boolean onCharTypedImpl(char charIn, int modifiers) {
-        if (this.num != null && this.num.onCharTyped(charIn, modifiers)) {
+    protected boolean onCharTypedImpl(CharInput input) {
+        if (this.num != null && this.num.onCharTyped(input)) {
             return true;
         }
 
-        return super.onCharTypedImpl(charIn, modifiers);
+        return super.onCharTypedImpl(input);
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton) {
-        if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton)) {
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick) {
+        if (super.onMouseClickedImpl(click, doubleClick)) {
             return true;
         }
 
         boolean ret = false;
 
         if (this.num != null) {
-            ret = this.num.getTextField().mouseClicked(mouseX, mouseY, mouseButton);
+            ret = this.num.mouseClicked(click, doubleClick);
         }
 
         if (!this.subWidgets.isEmpty()) {
             for (WidgetBase widget : this.subWidgets) {
                 ret |=
-                        widget.isMouseOver(mouseX, mouseY)
-                                && widget.onMouseClicked(mouseX, mouseY, mouseButton);
+                        widget.isMouseOver((int) click.x(), (int) click.y())
+                                && widget.onMouseClicked(click, doubleClick);
             }
         }
 
         return ret;
     }
 
-    protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY) {
+    protected void drawTextFields(GuiContext ctx, int mouseX, int mouseY) {
         if (this.num != null) {
-            this.num.getTextField().render(drawContext, mouseX, mouseY, 0f);
+            this.num.draw(ctx, mouseX, mouseY);
         }
     }
 }

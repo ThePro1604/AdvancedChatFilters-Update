@@ -23,6 +23,7 @@ import io.github.darkkronicle.advancedchatcore.ModuleHandler;
 import io.github.darkkronicle.advancedchatcore.config.gui.widgets.WidgetColor;
 import io.github.darkkronicle.advancedchatcore.config.gui.widgets.WidgetLabelHoverable;
 import io.github.darkkronicle.advancedchatcore.config.gui.widgets.WidgetToggle;
+import io.github.darkkronicle.advancedchatcore.util.Color;
 import io.github.darkkronicle.advancedchatcore.util.Colors;
 import io.github.darkkronicle.advancedchatcore.util.SearchResult;
 import io.github.darkkronicle.advancedchatcore.util.StyleFormatter;
@@ -130,12 +131,14 @@ public class GuiFilterEditor extends GuiBase {
         filter.getName().config.setValueFromString(name.getText());
         filter.getFindString().config.setValueFromString(findString.getText());
         filter.getReplaceTo().config.setValueFromString(replaceString.getText());
-        filter.getTextColor().config.setValueFromString(textColor.getText());
+        // Parse hex color string to integer
+        filter.getTextColor().config.setIntegerValue(
+                (int) Long.parseLong(textColor.getText().substring(1), 16));
         filter.getReplaceTextColor().config.setBooleanValue(setTextColor.isCurrentlyOn());
         filter.getReplaceType().config.setOptionListValue(replaceTypeWidget.getSelectedEntry());
-        filter.getBackgroundColor()
-                .config
-                .setValueFromString(backgroundColor.getText());
+        // Parse hex color string to integer
+        filter.getBackgroundColor().config.setIntegerValue(
+                (int) Long.parseLong(backgroundColor.getText().substring(1), 16));
         filter.getReplaceBackgroundColor()
                 .config
                 .setBooleanValue(setBackgroundColor.isCurrentlyOn());
@@ -195,7 +198,7 @@ public class GuiFilterEditor extends GuiBase {
                         y,
                         getWidth() / 2 - 1,
                         18,
-                        filter.getTextColor().config.get(),
+                        new Color(filter.getTextColor().config.getIntegerValue()),
                         textRenderer);
         this.addTextField(textColor, null);
         setTextColor = new WidgetToggle(
@@ -215,7 +218,7 @@ public class GuiFilterEditor extends GuiBase {
             this.addLabel(x, y, filter.getBackgroundColor().config);
             y += this.addLabel(x + getWidth() / 2, y, filter.getReplaceBackgroundColor().config) + 1;
         }
-        backgroundColor = new WidgetColor(x, y, getWidth() / 2 - 1, 18, filter.getBackgroundColor().config.get(), textRenderer);
+        backgroundColor = new WidgetColor(x, y, getWidth() / 2 - 1, 18, new Color(filter.getBackgroundColor().config.getIntegerValue()), textRenderer);
         setBackgroundColor = new WidgetToggle(x + getWidth() / 2 + 1, y, getWidth() / 2 - 1, false, "advancedchatfilters.config.filter.backgroundcoloractive", filter.getReplaceBackgroundColor().config.getBooleanValue());
         if (enableBackgroundColor) {
             this.addTextField(backgroundColor, null);
@@ -257,7 +260,7 @@ public class GuiFilterEditor extends GuiBase {
         ReplaceFilter testFilter = new ReplaceFilter(
                 filter.getReplaceTo().config.getStringValue().replaceAll("&", "§"),
                 filter.getReplace(),
-                filter.getReplaceTextColor().config.getBooleanValue() ? filter.getTextColor().config.get() : null
+                filter.getReplaceTextColor().config.getBooleanValue() ? new Color(filter.getTextColor().config.getIntegerValue()) : null
         );
         ParentFilter parent;
         parent = new ParentFilter(
