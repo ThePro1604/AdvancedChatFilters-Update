@@ -10,7 +10,7 @@ Please submit bugs to the [issue tracker](https://github.com/DarkKronicle/Advanc
 
 ## Dependencies
 
-[AdvancedChatCore](https://github.com/DarkKronicle/AdvancedChatCore) is required to run the mod.
+[AdvancedChatCore](https://github.com/ThePro1604/AdvancedChatCore-Update) is required to run the mod.
 
 ## Features
 
