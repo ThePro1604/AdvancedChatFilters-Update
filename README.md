@@ -6,7 +6,7 @@ I have no real interest in mod development at the moment, so I am archiving this
 
 AdvancedChatFilters allows for complex manipulation of incoming chat messages.
 
-Please submit bugs to the [issue tracker](https://github.com/DarkKronicle/AdvancedChatFilters/issues).
+Please submit bugs to the [issue tracker](https://github.com/ThePro1604/AdvancedChatFilters-Update/issues).
 
 ## Dependencies
 
