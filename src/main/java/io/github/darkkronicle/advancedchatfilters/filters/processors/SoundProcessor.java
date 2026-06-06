@@ -40,12 +40,12 @@ import io.github.darkkronicle.advancedchatcore.util.SearchResult;
 import io.github.darkkronicle.advancedchatfilters.config.Filter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -63,26 +63,26 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
         @Override
         public io.github.darkkronicle.Konstruct.parser.Result parse(ParseContext context, List<Node> input) {
             io.github.darkkronicle.Konstruct.parser.Result r1 = Function.parseArgument(context, input, 0);
-            SoundEvent event = getEvent(r1.getContent().getString());
+            SoundEvent event = getEvent(r1.getContent().toString());
             io.github.darkkronicle.Konstruct.parser.Result r2 = Function.parseArgument(context, input, 1);
             io.github.darkkronicle.Konstruct.parser.Result r3 = Function.parseArgument(context, input, 2);
 
             float pitch = 1;
             float volume = 1;
-            if (r2.getContent().getTypeName().equals(DoubleObject.TYPE_NAME)) {
+            if (r2.getContent().toString().equals(DoubleObject.TYPE_NAME)) {
                 pitch = (float) ((DoubleObject) r2.getContent()).getValue();
-            } else if (r2.getContent().getTypeName().equals(IntegerObject.TYPE_NAME)) {
+            } else if (r2.getContent().toString().equals(IntegerObject.TYPE_NAME)) {
                 pitch = (float) ((IntegerObject) r2.getContent()).getValue();
             }
-            if (r3.getContent().getTypeName().equals(DoubleObject.TYPE_NAME)) {
+            if (r3.getContent().toString().equals(DoubleObject.TYPE_NAME)) {
                 volume = (float) ((DoubleObject) r3.getContent()).getValue();
-            } else if (r3.getContent().getTypeName().equals(IntegerObject.TYPE_NAME)) {
+            } else if (r3.getContent().toString().equals(IntegerObject.TYPE_NAME)) {
                 volume = (float) ((IntegerObject) r3.getContent()).getValue();
             }
 
-            MinecraftClient.getInstance()
+            Minecraft.getInstance()
                     .getSoundManager()
-                    .play(PositionedSoundInstance.ui(event, pitch, volume));
+                    .play(SimpleSoundInstance.forUI(event, volume));
             return io.github.darkkronicle.Konstruct.parser.Result.success(new NullObject());
         }
 
@@ -93,7 +93,8 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
     }
 
     public static SoundEvent getEvent(String name) {
-        return SoundEvent.of(Identifier.of(name));
+        // TODO: SoundEvent lookup in 26.1
+        return null;
     }
 
     /* How the filter notifies the client of a found string.
@@ -128,15 +129,13 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
                             translate("soundvolume"), 1, 0.5, 3, translate("info.soundvolume")));
 
     @Override
-    public Result processMatches(Text text, Text unfiltered, SearchResult search) {
+    public Result processMatches(Component text, Component unfiltered, SearchResult search) {
         if (getSound() != Filter.NotifySound.NONE) {
-            MinecraftClient.getInstance()
+            Minecraft.getInstance()
                     .getSoundManager()
                     .play(
-                            PositionedSoundInstance.ui(
-                                    getSound().event,
-                                    (float) soundPitch.config.getDoubleValue(),
-                                    (float) soundVolume.config.getDoubleValue()));
+                            SimpleSoundInstance.forUI(
+                                    getSound().event, (float) soundVolume.config.getDoubleValue()));
             return Result.PROCESSED;
         }
         return Result.FAIL;
@@ -171,10 +170,9 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
 
         private final WidgetDropDownList<Filter.NotifySound> widgetDropDown;
 
-        @Override
         public void close() {
             save();
-            super.close();
+            super.closeGui(true);
         }
 
         public SoundScreen(Screen parent) {

@@ -17,7 +17,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatcore.config.gui.GuiConfig;
 import io.github.darkkronicle.advancedchatfilters.config.Filter;
 import io.github.darkkronicle.advancedchatfilters.config.FiltersConfigStorage;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.util.Collections;
 
@@ -41,7 +41,7 @@ public class GuiFilterManager extends GuiListBase<Filter, WidgetFilterEntry, Wid
         return this.width - 20;
     }
 
-    public void resize(MinecraftClient mc, int width, int height) {
+    public void resize(Minecraft mc, int width, int height) {
         this.width = width;
         this.height = height;
 

@@ -17,8 +17,8 @@ import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.darkkronicle.advancedchatfilters.config.FiltersConfigStorage;
 import io.github.darkkronicle.advancedchatfilters.scripting.ScriptFilter;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Util;
 
 public class GuiAdvancedFilterManager
@@ -42,7 +42,7 @@ public class GuiAdvancedFilterManager
         return this.width - 20;
     }
 
-    public void resize(MinecraftClient mc, int width, int height) {
+    public void resize(Minecraft mc, int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -95,10 +95,9 @@ public class GuiAdvancedFilterManager
         FiltersConfigStorage.loadFromFile();
     }
 
-    @Override
     public void close() {
         save();
-        super.close();
+        super.closeGui(true);
     }
 
     @Override
@@ -126,12 +125,12 @@ public class GuiAdvancedFilterManager
             if (this.type == ButtonListener.Type.BACK) {
                 parent.back();
             } else if (this.type == Type.OPEN_FOLDER) {
-                Util.getOperatingSystem()
-                        .open(
-                                FileUtils.getConfigDirectoryAsPath()
-                                        .resolve("advancedchat")
-                                        .resolve("filters")
-                                        .toFile());
+                // TODO: open folder in 26.1 - Util.getPlatform().openUri()
+                try {
+                    java.awt.Desktop.getDesktop().open(
+                        FileUtils.getConfigDirectoryAsPath()
+                            .resolve("advancedchat").resolve("filters").toFile());
+                } catch (Exception ignored) {}
             }
         }
 

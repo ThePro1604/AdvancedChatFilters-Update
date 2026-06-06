@@ -13,9 +13,9 @@ import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import io.github.darkkronicle.advancedchatfilters.config.Filter;
 import io.github.darkkronicle.advancedchatfilters.config.FiltersConfigStorage;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class WidgetListFilters extends WidgetListBase<Filter, WidgetFilterEntry>
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick) {
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick) {
         clearTextFieldFocus();
         return super.onMouseClicked(click, doubleClick);
     }
@@ -69,7 +69,7 @@ public class WidgetListFilters extends WidgetListBase<Filter, WidgetFilterEntry>
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input) {
+    public boolean onKeyTyped(KeyEvent input) {
         for (WidgetFilterEntry widget : this.listWidgets) {
             if (widget.onKeyTyped(input)) {
                 return true;

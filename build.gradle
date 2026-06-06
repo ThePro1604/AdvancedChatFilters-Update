@@ -3,15 +3,17 @@ import java.time.format.DateTimeFormatter
 import java.time.ZoneOffset
 
 plugins {
-    id 'fabric-loom' version "1.15-SNAPSHOT"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
-    id "io.freefair.lombok" version "8.10"
+    id "io.freefair.lombok" version "9.5.0"
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 // read version from env if provided by CI
@@ -33,30 +35,19 @@ repositories {
     maven { url 'https://masa.dy.fi/maven' }
     maven { url 'https://jitpack.io' }
     maven { url 'https://maven.fallenbreath.me/releases' }
-    maven {
-        url = uri("https://maven.pkg.github.com/ThePro1604/AdvancedChatCore-Update")
-        credentials {
-            username = findProperty("gpr.user")?.toString() ?: System.getenv("GITHUB_ACTOR")
-            password = findProperty("gpr.key")?.toString() ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    modImplementation("com.github.sakura-ryoko:malilib:${project.minecraft_version}-${project.malilib_version}")
-    modImplementation "com.arematics:advancedchatcore:${project.minecraft_version}-${project.advancedchat_version}"
-    modImplementation 'com.github.DarkKronicle.Konstruct:core:2.0.3-build1'
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "com.github.sakura-ryoko:malilib:${project.malilib_version}"
+    // Local AdvancedChatCore build (avoids GitHub Packages auth)
+    implementation files("../AdvancedChatCore-Update/build/libs/AdvancedChatCore-${project.minecraft_version}-${project.advancedchat_version}.jar")
+    implementation 'com.github.DarkKronicle.Konstruct:core:2.0.3-build1'
 
 	implementation 'org.openjdk.nashorn:nashorn-core:15.3'
 	implementation 'org.javadelight:delight-nashorn-sandbox:0.2.5'
-
-	//include 'org.openjdk.nashorn:nashorn-core:15.3'
-	//include 'org.javadelight:delight-nashorn-sandbox:0.2.5'
-	//include group: 'org.webjars.bower', name: 'js-beautify', version: '1.9.0'
 }
 
 processResources {
@@ -69,11 +60,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release = 21
-}
-
-tasks.named('remapJar') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    it.options.release = 25
 }
 
 tasks.register('sourcesJar', Jar) {
@@ -90,19 +77,14 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
+            artifact(jar) {
+                builtBy jar
             }
             artifact(sourcesJar) {
-                builtBy remapSourcesJar
+                builtBy sourcesJar
             }
         }
     }
-
-    // select the repositories you want to publish to
     repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
     }
 }

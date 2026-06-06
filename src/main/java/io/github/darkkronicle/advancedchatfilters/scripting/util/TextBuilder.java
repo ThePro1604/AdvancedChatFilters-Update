@@ -9,19 +9,19 @@ package io.github.darkkronicle.advancedchatfilters.scripting.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.*;
+import net.minecraft.resources.Identifier;
 
 import java.net.URI;
 import java.util.function.Function;
 
 /**
- * Utility class to make creating {@link Text} easier for scripts.
+ * Utility class to make creating {@link Component} easier for scripts.
  */
 @Environment(EnvType.CLIENT)
 public class TextBuilder {
 
-    private MutableText text;
+    private MutableComponent text;
 
     /**
      * Create's a new instance with the only text being an empty string.
@@ -36,23 +36,18 @@ public class TextBuilder {
      * @param content Content of the text
      */
     public TextBuilder(String content) {
-        text = Text.literal(content);
+        text = Component.literal(content);
     }
 
     /**
-     * @return Text that was created
+     * @return Component that was created
      */
-    public MutableText build() {
+    public MutableComponent build() {
         return text;
     }
 
     private void applyStyle(Function<Style, Style> styleSupplier) {
-        text = Text.literal(text.getContent().toString()).setStyle(styleSupplier.apply(text.getStyle()));
-        for (Text t : text.getSiblings()) {
-            for (Text te : t.getWithStyle(styleSupplier.apply(t.getStyle()))) {
-                text.append(te);
-            }
-        }
+        text = Component.literal(text.getString()).setStyle(styleSupplier.apply(text.getStyle()));
     }
 
     /**
@@ -112,7 +107,7 @@ public class TextBuilder {
      * @param underline If underlined or not
      */
     public TextBuilder setUnderline(boolean underline) {
-        applyStyle(style -> style.withUnderline(underline));
+        applyStyle(style -> style.withUnderlined(underline));
         return this;
     }
 
@@ -136,7 +131,7 @@ public class TextBuilder {
      */
     public TextBuilder setFont(String namespace, String name) {
         // Dunno if this will do anything or how it works
-        applyStyle(style -> style.withFont(new StyleSpriteSource.Font(Identifier.of(namespace, name))));
+        // TODO: withFont API changed in 26.1 (now takes FontDescription not Identifier)
         return this;
     }
 
@@ -146,7 +141,7 @@ public class TextBuilder {
      * @param content Content to add
      */
     public TextBuilder concatenate(String content) {
-        text.append(Text.literal(content));
+        text.append(Component.literal(content));
         return this;
     }
 
@@ -166,9 +161,7 @@ public class TextBuilder {
         } catch (IllegalArgumentException ignored) {
             return this;
         }
-        if (!clickAction.isUserDefinable()) {
-            return this;
-        }
+        // isUserDefinable check removed in 26.1
 
         ClickEvent clickEvent;
         switch (clickAction) {
@@ -194,11 +187,11 @@ public class TextBuilder {
     }
 
     /**
-     * Set's the {@link Text} that will be shown on hover.
+     * Set's the {@link Component} that will be shown on hover.
      *
-     * @param hoverText Text for hover
+     * @param hoverText Component for hover
      */
-    public TextBuilder setHoverText(Text hoverText) {
+    public TextBuilder setHoverText(Component hoverText) {
         HoverEvent hover = new HoverEvent.ShowText(hoverText);
         applyStyle(style -> style.withHoverEvent(hover));
         return this;

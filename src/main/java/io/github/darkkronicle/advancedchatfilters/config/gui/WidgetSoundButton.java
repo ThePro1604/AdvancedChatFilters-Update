@@ -8,13 +8,13 @@
 package io.github.darkkronicle.advancedchatfilters.config.gui;
 
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 
 public class WidgetSoundButton extends GuiTextFieldGeneric {
 
-    public WidgetSoundButton(int x, int y, int width, int height, TextRenderer textRenderer) {
-        super(x, y, width, height, textRenderer);
-        MinecraftClient.getInstance().getSoundManager();
+    public WidgetSoundButton(int x, int y, int width, int height, Font font) {
+        super(x, y, width, height, font);
+        Minecraft.getInstance().getSoundManager();
     }
 }

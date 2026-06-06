@@ -6,6 +6,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 package io.github.darkkronicle.advancedchatfilters.config.gui;
+import net.minecraft.client.Minecraft;
 
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigBase;
@@ -33,12 +34,12 @@ import io.github.darkkronicle.advancedchatfilters.config.Filter;
 import io.github.darkkronicle.advancedchatfilters.filters.ParentFilter;
 import io.github.darkkronicle.advancedchatfilters.filters.ReplaceFilter;
 import io.github.darkkronicle.advancedchatfilters.registry.MatchReplaceRegistry;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class GuiFilterEditor extends GuiBase {
     private WidgetToggle stripColors;
 
     private GuiTextFieldGeneric test;
-    private List<Text> outputMessage;
+    private List<Component> outputMessage;
 
     public FilterTab tab = FilterTab.CONFIG;
 
@@ -68,10 +69,9 @@ public class GuiFilterEditor extends GuiBase {
         this.setParent(parent);
     }
 
-    @Override
     public void close() {
         save();
-        super.close();
+        super.closeGui(true);
     }
 
     @Override
@@ -82,15 +82,15 @@ public class GuiFilterEditor extends GuiBase {
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks) {
-        super.render(drawContext, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(drawContext, mouseX, mouseY, partialTicks);
         int y = test.getY() + 20;
         int x = 10;
-        for (Text t : outputMessage) {
+        for (Component t : outputMessage) {
             if (t != null) {
-                drawContext.drawTextWithShadow(textRenderer, t, x, y, -1);
+                drawContext.text(font, t, x, y, -1);
             }
-            y += textRenderer.fontHeight + 2;
+            y += font.lineHeight + 2;
         }
     }
 
@@ -128,17 +128,17 @@ public class GuiFilterEditor extends GuiBase {
     }
 
     public void save() {
-        filter.getName().config.setValueFromString(name.getText());
-        filter.getFindString().config.setValueFromString(findString.getText());
-        filter.getReplaceTo().config.setValueFromString(replaceString.getText());
+        filter.getName().config.setValueFromString(name.getValue());
+        filter.getFindString().config.setValueFromString(findString.getValue());
+        filter.getReplaceTo().config.setValueFromString(replaceString.getValue());
         // Parse hex color string to integer
         filter.getTextColor().config.setIntegerValue(
-                (int) Long.parseLong(textColor.getText().substring(1), 16));
+                (int) Long.parseLong(textColor.getValue().substring(1), 16));
         filter.getReplaceTextColor().config.setBooleanValue(setTextColor.isCurrentlyOn());
         filter.getReplaceType().config.setOptionListValue(replaceTypeWidget.getSelectedEntry());
         // Parse hex color string to integer
         filter.getBackgroundColor().config.setIntegerValue(
-                (int) Long.parseLong(backgroundColor.getText().substring(1), 16));
+                (int) Long.parseLong(backgroundColor.getValue().substring(1), 16));
         filter.getReplaceBackgroundColor()
                 .config
                 .setBooleanValue(setBackgroundColor.isCurrentlyOn());
@@ -147,7 +147,7 @@ public class GuiFilterEditor extends GuiBase {
     }
 
     private void createButtons(int x, int y) {
-        int windowWidth = client.getWindow().getScaledWidth();
+        int windowWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int defaultX = x;
 
         // Top buttons
@@ -189,7 +189,7 @@ public class GuiFilterEditor extends GuiBase {
         this.addWidget(replaceTypeWidget);
         y += stripColors.getHeight() + 4;
 
-        // Text color
+        // Component color
         this.addLabel(x, y, filter.getTextColor().config);
         y += this.addLabel(x + getWidth() / 2, y, filter.getReplaceTextColor().config) + 1;
         textColor =
@@ -199,7 +199,7 @@ public class GuiFilterEditor extends GuiBase {
                         getWidth() / 2 - 1,
                         18,
                         new Color(filter.getTextColor().config.getIntegerValue()),
-                        textRenderer);
+                        font);
         this.addTextField(textColor, null);
         setTextColor = new WidgetToggle(
                 x + getWidth() / 2 + 1,
@@ -218,7 +218,7 @@ public class GuiFilterEditor extends GuiBase {
             this.addLabel(x, y, filter.getBackgroundColor().config);
             y += this.addLabel(x + getWidth() / 2, y, filter.getReplaceBackgroundColor().config) + 1;
         }
-        backgroundColor = new WidgetColor(x, y, getWidth() / 2 - 1, 18, new Color(filter.getBackgroundColor().config.getIntegerValue()), textRenderer);
+        backgroundColor = new WidgetColor(x, y, getWidth() / 2 - 1, 18, new Color(filter.getBackgroundColor().config.getIntegerValue()), font);
         setBackgroundColor = new WidgetToggle(x + getWidth() / 2 + 1, y, getWidth() / 2 - 1, false, "advancedchatfilters.config.filter.backgroundcoloractive", filter.getReplaceBackgroundColor().config.getBooleanValue());
         if (enableBackgroundColor) {
             this.addTextField(backgroundColor, null);
@@ -232,7 +232,7 @@ public class GuiFilterEditor extends GuiBase {
         y += this.addLabel(x, y, filter.getFindString().config) + 1;
         findString = this.addStringConfigButton(x, y, windowWidth - (defaultX * 2) - 120, 13, filter.getFindString().config);
         findString.setMaxLength(64000);
-        findString.setText(filter.getFindString().config.getStringValue());
+        findString.setValue(filter.getFindString().config.getStringValue());
 
         y += findType.getHeight() + 10;
 
@@ -240,7 +240,7 @@ public class GuiFilterEditor extends GuiBase {
         y += this.addLabel(x, y, filter.getReplaceTo().config) + 1;
         replaceString = this.addStringConfigButton(x, y, windowWidth - (defaultX * 2) - 120, 13, filter.getReplaceTo().config);
         replaceString.setMaxLength(64000);
-        replaceString.setText(filter.getReplaceTo().config.getStringValue());
+        replaceString.setValue(filter.getReplaceTo().config.getStringValue());
 
         y = backgroundColor.getY() + 25;
 
@@ -269,12 +269,12 @@ public class GuiFilterEditor extends GuiBase {
                 filter.getStripColors().config.getBooleanValue()
         );
 
-        List<Text> built = new ArrayList<>();
+        List<Component> built = new ArrayList<>();
         TextBuilder outputMessageBuilder = new TextBuilder();
-        outputMessageBuilder.append("Input Message: ", Style.EMPTY.withFormatting(Formatting.BOLD, Formatting.GRAY));
-        String testString = test.getText().replaceAll("&", "§");
+        outputMessageBuilder.append("Input Message: ", Style.EMPTY.applyFormat(ChatFormatting.BOLD).applyFormat(ChatFormatting.GRAY));
+        String testString = test.getValue().replaceAll("&", "§");
         if (testString.isEmpty()) {
-            outputMessageBuilder.append("None", Style.EMPTY.withFormatting(Formatting.RED));
+            outputMessageBuilder.append("None", Style.EMPTY.applyFormat(ChatFormatting.RED));
         } else {
             outputMessageBuilder.append(testString);
         }
@@ -285,23 +285,23 @@ public class GuiFilterEditor extends GuiBase {
             result = SearchResult.searchOf(testString, parent.getFindString(), parent.getFindType());
         } catch (Exception e) {
             outputMessage = new ArrayList<>();
-            outputMessage.add(Text.literal("RegEx parsing error! " + e.getMessage()).formatted(Formatting.RED));
+            outputMessage.add(Component.literal("RegEx parsing error! " + e.getMessage()).withStyle(ChatFormatting.RED));
             return;
         }
         boolean searchSuccess = result.size() > 0;
-        outputMessageBuilder.append("Matched: ", Style.EMPTY.withFormatting(Formatting.BOLD, Formatting.GRAY))
+        outputMessageBuilder.append("Matched: ", Style.EMPTY.applyFormat(ChatFormatting.BOLD).applyFormat(ChatFormatting.GRAY))
                 .append(
-                        String.valueOf(searchSuccess), Style.EMPTY.withFormatting(searchSuccess ? Formatting.GREEN : Formatting.RED)
+                        String.valueOf(searchSuccess), Style.EMPTY.applyFormat(searchSuccess ? ChatFormatting.GREEN : ChatFormatting.RED)
                 );
         built.add(outputMessageBuilder.build());
         outputMessageBuilder = new TextBuilder();
-        MutableText input = StyleFormatter.formatText(Text.literal(testString));
+        MutableComponent input = StyleFormatter.formatText(Component.literal(testString));
         try {
-            MutableText output = StyleFormatter.formatText(testFilter.filter(parent, input, input, result).orElse(input));
-            outputMessageBuilder.append("Output Message: ", Style.EMPTY.withFormatting(Formatting.BOLD, Formatting.GRAY));
+            MutableComponent output = StyleFormatter.formatText(testFilter.filter(parent, input, input, result).orElse(input));
+            outputMessageBuilder.append("Output Message: ", Style.EMPTY.applyFormat(ChatFormatting.BOLD).applyFormat(ChatFormatting.GRAY));
             outputMessageBuilder.append(output);
         } catch (NodeException e) {
-            outputMessageBuilder.append("Konstruct error! " + e.getMessage(), Style.EMPTY.withFormatting(Formatting.RED));
+            outputMessageBuilder.append("Konstruct error! " + e.getMessage(), Style.EMPTY.applyFormat(ChatFormatting.RED));
         }
         built.add(outputMessageBuilder.build());
         outputMessage = built;
@@ -323,10 +323,10 @@ public class GuiFilterEditor extends GuiBase {
     }
 
     private GuiTextFieldGeneric addStringConfigButton(int x, int y, int width, int height, ConfigString conf) {
-        GuiTextFieldGeneric name = new GuiTextFieldGeneric(x, y, width, height, this.textRenderer);
+        GuiTextFieldGeneric name = new GuiTextFieldGeneric(x, y, width, height, this.font);
         name.setMaxLength(128);
         if (conf != null) {
-            name.setText(conf.getStringValue());
+            name.setValue(conf.getStringValue());
         }
         this.addTextField(name, null);
         return name;
