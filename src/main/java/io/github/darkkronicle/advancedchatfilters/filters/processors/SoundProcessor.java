@@ -63,20 +63,20 @@ public class SoundProcessor implements IMatchProcessor, IJsonApplier, IScreenSup
         @Override
         public io.github.darkkronicle.Konstruct.parser.Result parse(ParseContext context, List<Node> input) {
             io.github.darkkronicle.Konstruct.parser.Result r1 = Function.parseArgument(context, input, 0);
-            SoundEvent event = getEvent(r1.getContent().toString());
+            SoundEvent event = getEvent(r1.getContent().getString());
             io.github.darkkronicle.Konstruct.parser.Result r2 = Function.parseArgument(context, input, 1);
             io.github.darkkronicle.Konstruct.parser.Result r3 = Function.parseArgument(context, input, 2);
 
             float pitch = 1;
             float volume = 1;
-            if (r2.getContent().toString().equals(DoubleObject.TYPE_NAME)) {
+            if (r2.getContent().getTypeName().equals(DoubleObject.TYPE_NAME)) {
                 pitch = (float) ((DoubleObject) r2.getContent()).getValue();
-            } else if (r2.getContent().toString().equals(IntegerObject.TYPE_NAME)) {
+            } else if (r2.getContent().getTypeName().equals(IntegerObject.TYPE_NAME)) {
                 pitch = (float) ((IntegerObject) r2.getContent()).getValue();
             }
-            if (r3.getContent().toString().equals(DoubleObject.TYPE_NAME)) {
+            if (r3.getContent().getTypeName().equals(DoubleObject.TYPE_NAME)) {
                 volume = (float) ((DoubleObject) r3.getContent()).getValue();
-            } else if (r3.getContent().toString().equals(IntegerObject.TYPE_NAME)) {
+            } else if (r3.getContent().getTypeName().equals(IntegerObject.TYPE_NAME)) {
                 volume = (float) ((IntegerObject) r3.getContent()).getValue();
             }
 

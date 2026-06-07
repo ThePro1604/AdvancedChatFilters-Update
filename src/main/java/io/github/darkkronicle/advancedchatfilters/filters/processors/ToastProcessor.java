@@ -46,12 +46,12 @@ public class ToastProcessor implements IMatchProcessor, IScreenSupplier, IJsonAp
         @Override
         public io.github.darkkronicle.Konstruct.parser.Result parse(ParseContext context, List<Node> input) {
             io.github.darkkronicle.Konstruct.parser.Result r1 = Function.parseArgument(context, input, 0);
-            Component titleText = StyleFormatter.formatText(Component.literal(r1.getContent().toString()));
+            Component titleText = StyleFormatter.formatText(Component.literal(r1.getContent().getString()));
             Component descriptionText = null;
             boolean instant = false;
             if (input.size() > 1) {
                 io.github.darkkronicle.Konstruct.parser.Result r2 = Function.parseArgument(context, input, 1);
-                descriptionText = StyleFormatter.formatText(Component.literal(r2.getContent().toString()));
+                descriptionText = StyleFormatter.formatText(Component.literal(r2.getContent().getString()));
             }
             if (input.size() > 2) {
                 io.github.darkkronicle.Konstruct.parser.Result r3 = Function.parseArgument(context, input, 2);

@@ -52,7 +52,7 @@ public class OnlyMatchTextReplace implements IMatchReplace {
 
     public static MutableComponent formatMessage(Component current, ReplaceFilter filter, Component text, SearchResult result, StringMatch match) {
         ParseContext context = FiltersHandler.getInstance().createFilterContext(filter, text, result, match);
-        String message = filter.replaceTo.parse(context).getContent().toString();
+        String message = filter.replaceTo.parse(context).getContent().getString();
         message = result.getGroupReplacements(message, getMatchIndex(result, match));
         return Component.literal(message).withStyle(current.getStyle());
     }

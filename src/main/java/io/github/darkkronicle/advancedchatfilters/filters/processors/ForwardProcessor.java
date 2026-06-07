@@ -33,7 +33,7 @@ public class ForwardProcessor implements IMatchProcessor {
         @Override
         public io.github.darkkronicle.Konstruct.parser.Result parse(ParseContext context, List<Node> input) {
             io.github.darkkronicle.Konstruct.parser.Result r1 = Function.parseArgument(context, input, 0);
-            Component text = Component.literal(r1.getContent().toString());
+            Component text = Component.literal(r1.getContent().getString());
             new ChatHistoryProcessor().process(text, text);
             return io.github.darkkronicle.Konstruct.parser.Result.success(new NullObject());
         }
