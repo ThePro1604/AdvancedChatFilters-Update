@@ -5,10 +5,13 @@
   "name": "AdvancedChatFilters",
   "description": "Filters for AdvancedChat",
   "authors": [
-    "DarkKronicle"
+    "ThePro1604"
+  ],
+  "contributors": [
+    "DarkKronicle (original author)"
   ],
   "contact": {
-    "homepage": "https://arematics.com",
+    "homepage": "https://github.com/ThePro1604",
     "sources": "https://github.com/ThePro1604/AdvancedChatFilters-Update",
     "issues": "https://github.com/ThePro1604/AdvancedChatFilters-Update/issues"
   },
@@ -17,7 +20,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "io.github.darkkronicle.advancedchatfilters.AdvancedChatFilters"
+      "io.github.thepro1604.advancedchatfilters.AdvancedChatFilters"
     ]
   },
   "depends": {

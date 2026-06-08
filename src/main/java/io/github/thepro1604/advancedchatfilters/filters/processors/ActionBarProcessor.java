@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2021 thepro1604
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+package io.github.thepro1604.advancedchatfilters.filters.processors;
+
+import io.github.darkkronicle.Konstruct.functions.Function;
+import io.github.darkkronicle.Konstruct.functions.NamedFunction;
+import io.github.darkkronicle.Konstruct.nodes.Node;
+import io.github.darkkronicle.Konstruct.parser.IntRange;
+import io.github.darkkronicle.Konstruct.parser.ParseContext;
+import io.github.darkkronicle.Konstruct.type.NullObject;
+import io.github.thepro1604.advancedchatcore.interfaces.IMatchProcessor;
+import io.github.thepro1604.advancedchatcore.util.SearchResult;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+
+import java.util.List;
+
+@Environment(EnvType.CLIENT)
+public class ActionBarProcessor implements IMatchProcessor {
+
+    public static class ActionBarFunction implements NamedFunction {
+
+        @Override
+        public String getName() {
+            return "toActionBar";
+        }
+
+        @Override
+        public io.github.darkkronicle.Konstruct.parser.Result parse(ParseContext context, List<Node> input) {
+            io.github.darkkronicle.Konstruct.parser.Result r1 = Function.parseArgument(context, input, 0);
+            Component text = Component.literal(r1.getContent().getString());
+            Minecraft.getInstance().player.sendSystemMessage(text);
+            return io.github.darkkronicle.Konstruct.parser.Result.success(new NullObject());
+        }
+
+        @Override
+        public IntRange getArgumentCount() {
+            return IntRange.of(1);
+        }
+    }
+
+    @Override
+    public Result processMatches(Component text, Component unfiltered, SearchResult matches) {
+        Minecraft client = Minecraft.getInstance();
+        if (Minecraft.getInstance().player == null) {
+            return Result.PROCESSED;
+        }
+        Minecraft.getInstance().player.sendSystemMessage(text);
+        return Result.PROCESSED;
+    }
+}

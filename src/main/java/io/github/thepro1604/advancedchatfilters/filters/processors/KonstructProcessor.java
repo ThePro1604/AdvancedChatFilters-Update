@@ -1,0 +1,102 @@
+package io.github.thepro1604.advancedchatfilters.filters.processors;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import fi.dy.masa.malilib.config.options.ConfigString;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
+import io.github.darkkronicle.Konstruct.NodeException;
+import io.github.darkkronicle.Konstruct.nodes.Node;
+import io.github.darkkronicle.Konstruct.reader.builder.NodeBuilder;
+import io.github.thepro1604.advancedchatcore.config.SaveableConfig;
+import io.github.thepro1604.advancedchatcore.interfaces.IJsonApplier;
+import io.github.thepro1604.advancedchatcore.interfaces.IMatchProcessor;
+import io.github.thepro1604.advancedchatcore.interfaces.IScreenSupplier;
+import io.github.thepro1604.advancedchatcore.util.SearchResult;
+import io.github.thepro1604.advancedchatfilters.AdvancedChatFilters;
+import io.github.thepro1604.advancedchatfilters.FiltersHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import org.apache.logging.log4j.Level;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
+
+public class KonstructProcessor implements IMatchProcessor, IJsonApplier, IScreenSupplier {
+
+    private SaveableConfig<ConfigString> content = SaveableConfig.fromConfig("nodeData",
+            new ConfigString("advancedchatfilters.config.konstruct.nodedata", "", "advancedchatfilters.config.konstruct.nodedata"));
+
+    private Node node;
+
+    @Override
+    public Result processMatches(Component text, @Nullable Component unfiltered, @Nullable SearchResult search) {
+        if (node != null) {
+            node.parse(FiltersHandler.getInstance().createTextContext(text, search));
+        }
+        return Result.PROCESSED;
+    }
+
+    @Override
+    public JsonObject save() {
+        JsonObject obj = new JsonObject();
+        obj.add("nodeData", content.config.getAsJsonElement());
+        return obj;
+    }
+
+    @Override
+    public void load(JsonElement element) {
+        node = null;
+        if (!element.isJsonObject()) {
+            return;
+        }
+        JsonObject obj = element.getAsJsonObject();
+        if (obj.has("nodeData")) {
+            content.config.setValueFromJsonElement(obj.get("nodeData"));
+            loadNode();
+        }
+    }
+
+    public void loadNode() {
+        try {
+            node = new NodeBuilder(content.config.getStringValue()).build();
+        } catch (NodeException e) {
+            AdvancedChatFilters.LOGGER.log(Level.ERROR, "Problem setting up Konstruct processor.", e);
+            node = null;
+        }
+    }
+
+    @Override
+    public Supplier<Screen> getScreen(@Nullable Screen parent) {
+        return () -> new KonstructConfig(parent, this);
+    }
+
+    public static class KonstructConfig extends GuiBase {
+
+        private GuiTextFieldGeneric text;
+        private final KonstructProcessor processor;
+
+        public KonstructConfig(Screen parent, KonstructProcessor processor) {
+            this.setParent(parent);
+            this.processor = processor;
+        }
+
+        @Override
+        public void initGui() {
+            text = new GuiTextFieldGeneric(10, 26, Minecraft.getInstance().getWindow().getGuiScaledWidth() - 20, 13, Minecraft.getInstance().font);
+            text.setMaxLength(64000);
+            text.setValue(processor.content.config.getStringValue());
+            addTextField(text, null);
+        }
+
+        @Override
+        public void closeGui(boolean showParent) {
+            processor.content.config.setValueFromString(text.getValue());
+            processor.loadNode();
+            super.closeGui(showParent);
+        }
+
+
+    }
+}
