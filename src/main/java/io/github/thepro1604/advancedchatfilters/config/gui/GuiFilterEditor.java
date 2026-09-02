@@ -59,7 +59,7 @@ public class GuiFilterEditor extends GuiBase {
     private WidgetToggle stripColors;
 
     private GuiTextFieldGeneric test;
-    private List<Component> outputMessage;
+    private List<Component> outputMessage = new ArrayList<>();
 
     public FilterTab tab = FilterTab.CONFIG;
 

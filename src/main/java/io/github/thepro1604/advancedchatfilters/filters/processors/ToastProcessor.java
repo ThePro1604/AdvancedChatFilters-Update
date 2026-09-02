@@ -57,7 +57,7 @@ public class ToastProcessor implements IMatchProcessor, IScreenSupplier, IJsonAp
                 io.github.darkkronicle.Konstruct.parser.Result r3 = Function.parseArgument(context, input, 2);
                 instant = r3.getContent().getBoolean();
             }
-            ToastManager manager = Minecraft.getInstance().getToastManager();
+            ToastManager manager = Minecraft.getInstance().gui.toastManager();
             if (instant) {
                 SystemToast.addOrUpdate(manager, SystemToast.SystemToastId.PERIODIC_NOTIFICATION, titleText, descriptionText);
             } else {
@@ -98,7 +98,7 @@ public class ToastProcessor implements IMatchProcessor, IScreenSupplier, IJsonAp
             String content = search.getGroupReplacements(description.config.getStringValue(), 0);
             descriptionText = StyleFormatter.formatText(Component.literal(content));
         }
-        ToastManager manager = Minecraft.getInstance().getToastManager();
+        ToastManager manager = Minecraft.getInstance().gui.toastManager();
         SystemToast.addOrUpdate(manager, SystemToast.SystemToastId.PERIODIC_NOTIFICATION, titleText, descriptionText);
         return Result.getFromBool(true);
     }

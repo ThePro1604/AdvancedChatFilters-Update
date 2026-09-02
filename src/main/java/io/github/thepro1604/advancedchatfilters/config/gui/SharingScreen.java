@@ -47,16 +47,18 @@ public class SharingScreen extends GuiBase {
         int y = 50;
         text = new GuiTextFieldGeneric(x, y, 300, 20, font);
         y -= 24;
+        text.setBordered(true);
+        text.setEditable(true);
+        // Register the (still-empty) field before growing its max length, since
+        // addTextField()'s TextFieldWrapper clamps a field's max length down to
+        // whatever the shared TextFieldType.STRING cap currently is, which would
+        // otherwise truncate/crash on a long import/export string set below.
+        this.addTextField(text, null);
         text.setMaxLength(12800);
         if (starting != null) {
             text.setValue(starting);
-            text.setFocused(true);
         }
         text.setFocused(true);
-        text.setBordered(true);
-        text.setEditable(true);
-        text.setFocused(true);
-        this.addTextField(text, null);
         String filterName = ButtonListener.Type.IMPORT_FILTER.getDisplayName();
         int filterWidth = StringUtils.getStringWidth(filterName) + 10;
         this.addButton(
