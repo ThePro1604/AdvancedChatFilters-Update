@@ -17,7 +17,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
+import com.mojang.blaze3d.platform.InputConstants;
 import fi.dy.masa.malilib.util.StringUtils;
 import io.github.thepro1604.advancedchatcore.config.gui.widgets.WidgetIntBox;
 import io.github.thepro1604.advancedchatcore.util.Colors;
@@ -210,7 +210,7 @@ public class WidgetAdvancedFilterEntry extends WidgetListEntryBase<ScriptFilter>
     @Override
     protected boolean onKeyTypedImpl(KeyEvent input) {
         if (this.num != null && this.num.isFocused()) {
-            if (input.key() == KeyCodes.KEY_ENTER) {
+            if (input.key() == InputConstants.KEY_RETURN) {
                 this.num.textField().getApply().run();
                 return true;
             } else {

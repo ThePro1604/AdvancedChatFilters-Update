@@ -128,7 +128,7 @@ public class GuiAdvancedFilterManager
                 // TODO: open folder in 26.1 - Util.getPlatform().openUri()
                 try {
                     java.awt.Desktop.getDesktop().open(
-                        FileUtils.getConfigDirectoryAsPath()
+                        FileUtils.getConfigDirectory()
                             .resolve("advancedchat").resolve("filters").toFile());
                 } catch (Exception ignored) {}
             }

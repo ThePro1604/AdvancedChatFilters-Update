@@ -84,7 +84,7 @@ public class ScriptManager implements IMessageFilter {
 
         // Grab all *.js files
         File directory =
-                FileUtils.getConfigDirectoryAsPath()
+                FileUtils.getConfigDirectory()
                         .resolve("advancedchat")
                         .resolve("filters")
                         .toFile();
